@@ -302,8 +302,10 @@ Neste exemplo, nós vamos usar os dados de domicílios do censo de 2010 para cal
 
 ```{r, message=FALSE}
 #| label: read-household-data
-dom <- read_households(year = 2010, 
-                      showProgress = FALSE)
+dom <- read_households(
+  year = 2010, 
+  showProgress = FALSE
+  )
 
 ```
 
