@@ -129,9 +129,9 @@ O **{censobr}** é um pacote de R para acessar os dados e documentação dos cen
       <td></td>
       <td></td>
       <td></td>
-      <td>em breve</td>
       <td>X</td>
-      <td>em breve</td>
+      <td>X</td>
+      <td>X</td>
     </tr>
   </tbody>
 </table>
@@ -149,7 +149,8 @@ read_households(
   add_labels,    # adiciona os 'labels' das variáveis categóricas
   as_data_frame, # retorna resultado como um `Arrow DataSet` ou `data.frame`
   showProgress,  # mostra barra de progresso do download
-  cache          # salva arquivo em cache para rapida leitura posteriormente
+  cache,         # salva arquivo em cache para rapida leitura posteriormente
+  verbose        # printa/silencia mensagens informativas
   )
 ```
 
@@ -466,32 +467,36 @@ ggplot() +
 
 Na primeira vez que o usuário executa uma função, o **{censobr}** fará o download do arquivo e o armazenará localmente. Dessa forma, os dados só precisam ser baixados uma vez. Quando o parâmetro `cache` está configurado como `TRUE` (que é o comportamento padrão do pacote), a função lerá os dados que já estão armanezados em cache, o que é praticamente instantâneo.
 
-Os usuários podem gerenciar os conjuntos de dados em cache usando a função `censobr_cache()`. Por exemplo, os usuários podem:
+Os usuários podem gerenciar os conjuntos de dados em cache usando algumas funções. Por exemplo, os usuários podem:
 
-Listar arquivos em cache:
+Encontrar qual é a pasta de cache sendo utilizada pelo pacote. Por padrão, os arquivos do **{censobr}** são salvos no diretório 'User'.
+
+```{r warning=FALSE, eval=FALSE}
+get_censobr_cache_dir()
+```
+
+No entanto, você pote apontar para qualquer outro endereço onde o cache deverá ser salvo, essa configuração é persistente entre sessões do R.
+
+```{r warning=FALSE, eval=FALSE}
+set_censobr_cache_dir(path = ... )
+```
+
+A função `censobr_cache()` permite tanto listar os arquivos em cache:
 
 ```{r warning=FALSE, eval=FALSE}
 censobr_cache(list_files = TRUE)
 ```
 
-Deletar um arquivo específico:
+quanto deletar um arquivo específico:
+
 ```{r warning=FALSE, eval=FALSE}
 censobr_cache(delete_file = "2010_emigration")
 
 ```
 
-Deletar todos arquivos do cache:
+ou mesmo deletar todos arquivos do cache:
+
 ```{r warning=FALSE, eval=FALSE}
 censobr_cache(delete_file = "all")
 
 ```
-
-Por padrão, os arquivos do **{censobr}** são salvos no diretório 'User'. No entanto, os usuários podem executar a função `set_censobr_cache_dir()` para definir um diretório de cache personalizado. Note que essa definição personalizada precisa ser definida a cada nova sessão do R.
-
-```{r, eval=FALSE, warning=FALSE}
-tempf <- tempdir()
-
-set_censobr_cache_dir(path = tempf)
-
-```
-

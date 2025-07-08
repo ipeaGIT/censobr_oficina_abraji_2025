@@ -363,9 +363,9 @@ div.csl-indent {
 <td></td>
 <td></td>
 <td></td>
-<td>em breve</td>
 <td>X</td>
-<td>em breve</td>
+<td>X</td>
+<td>X</td>
 </tr>
 </tbody>
 </table>
@@ -377,8 +377,9 @@ div.csl-indent {
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  add_labels,    <span class="co"># adiciona os 'labels' das variáveis categóricas</span></span>
 <span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  as_data_frame, <span class="co"># retorna resultado como um `Arrow DataSet` ou `data.frame`</span></span>
 <span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  showProgress,  <span class="co"># mostra barra de progresso do download</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  cache          <span class="co"># salva arquivo em cache para rapida leitura posteriormente</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  cache,         <span class="co"># salva arquivo em cache para rapida leitura posteriormente</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  verbose        <span class="co"># printa/silencia mensagens informativas</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="callout callout-style-default callout-important callout-titled">
 <div class="callout-header d-flex align-content-center">
@@ -447,13 +448,15 @@ Cache local dos dados
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pop) <span class="sc">|&gt;</span> </span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     V0010     V0601 V6036
-1 8.705865 Masculino    22
-2 8.705865  Feminino    17
-3 9.818689 Masculino    38
-4 9.495608  Feminino    44
-5 9.495608 Masculino    11
-6 9.495608 Masculino    16</code></pre>
+<pre><code># A tibble: 6 × 3
+  V0010 V0601     V6036
+* &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;
+1  8.71 Masculino    22
+2  8.71 Feminino     17
+3  9.82 Masculino    38
+4  9.50 Feminino     44
+5  9.50 Masculino    11
+6  9.50 Masculino    16</code></pre>
 </div>
 </div>
 <p>O próximo passo para criamos nossa pirâmide populacional é criar um variável categória com grupos de idade. No exemplo abaix, nós utilizadmos grupos de 5 anos.</p>
@@ -481,13 +484,15 @@ Cache local dos dados
 <span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pop) <span class="sc">|&gt;</span> </span>
 <span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">collect</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>     V0010     V0601 V6036 age_group
-1 8.705865 Masculino    22     20-25
-2 8.705865  Feminino    17     15-20
-3 9.818689 Masculino    38     35-40
-4 9.495608  Feminino    44     40-45
-5 9.495608 Masculino    11     10-15
-6 9.495608 Masculino    16     15-20</code></pre>
+<pre><code># A tibble: 6 × 4
+  V0010 V0601     V6036 age_group
+* &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt; &lt;chr&gt;    
+1  8.71 Masculino    22 20-25    
+2  8.71 Feminino     17 15-20    
+3  9.82 Masculino    38 35-40    
+4  9.50 Feminino     44 40-45    
+5  9.50 Masculino    11 10-15    
+6  9.50 Masculino    16 15-20    </code></pre>
 </div>
 </div>
 <p>E em seguida, nós só precisamos somar o número de homens e mulheres em cada grupo de idade. Para isso, nós somamos os valores da variável de peso amostral <code>V0010</code> em cada grupo. Repare que ao chamarmos a função <code>collect()</code>, o código é executado e retorna um <code>data.frame</code> com a contagem de pessoas por sexo e faixa de idade. Repare que nós processamos todos os mais de 20 milhões de registro do censo, mas só precisamos carregar na memória essa tabela com 30 observações.</p>
@@ -616,6 +621,11 @@ Cache local dos dados
 <span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(<span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
 <span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"Região"</span>, <span class="at">y=</span><span class="st">"Quantidade de domicílios</span><span class="sc">\n</span><span class="st">conectados à rede de esgoto"</span>) <span class="sc">+</span></span>
 <span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_classic</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Computation failed in `stat_boxplot()`.
+Caused by error in `loadNamespace()`:
+! there is no package called 'quantreg'</code></pre>
+</div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -640,15 +650,15 @@ Cache local dos dados
 </div>
 <p>Para criarmos uma mapa com a distribuição espacial da cobertura da rede de esgoto no Brasil, nós vamos primeiro usar o pacote <strong>{geobr}</strong> para baixar as geometrias dos municípios brasileiros no ano de 2010. Vamos também sobrepor os limites das grandes regiões do país para dar um pouco mais de contexto à figura.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geobr)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>regioes_df <span class="ot">&lt;-</span> <span class="fu">read_region</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">showProgress =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>muni_sf <span class="ot">&lt;-</span> <span class="fu">read_municipality</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">showProgress =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(muni_sf)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(geobr)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>regioes_df <span class="ot">&lt;-</span> <span class="fu">read_region</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>                          <span class="at">showProgress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>muni_sf <span class="ot">&lt;-</span> <span class="fu">read_municipality</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                             <span class="at">showProgress =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(muni_sf)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 6 features and 4 fields
 Geometry type: MULTIPOLYGON
@@ -673,19 +683,19 @@ Geodetic CRS:  SIRGAS 2000
 </div>
 <p>Agora nós só precisamos unir os dados espaciais com nossas estimativas utilizando a variável chave <code>code_muni</code> e mapear os resultados.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merge data</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>esg_sf <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(muni_sf, esg, <span class="at">by =</span> <span class="st">'code_muni'</span>)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot map</span></span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> esg_sf, <span class="fu">aes</span>(<span class="at">fill =</span> cobertura), <span class="at">color=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> regioes_df, <span class="at">color =</span> <span class="st">'gray20'</span>, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Quantidade de domicílios conectados à rede de esgoto"</span>) <span class="sc">+</span></span>
-<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Greens"</span>, <span class="at">direction =</span> <span class="dv">1</span>, </span>
-<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name=</span><span class="st">'Proporção de</span><span class="sc">\n</span><span class="st">domicílios'</span>, </span>
-<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
-<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
-<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># merge data</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>esg_sf <span class="ot">&lt;-</span> dplyr<span class="sc">::</span><span class="fu">left_join</span>(muni_sf, esg, <span class="at">by =</span> <span class="st">'code_muni'</span>)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="co"># plot map</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> esg_sf, <span class="fu">aes</span>(<span class="at">fill =</span> cobertura), <span class="at">color=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> regioes_df, <span class="at">color =</span> <span class="st">'gray20'</span>, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Quantidade de domicílios conectados à rede de esgoto"</span>) <span class="sc">+</span></span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Greens"</span>, <span class="at">direction =</span> <span class="dv">1</span>, </span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name=</span><span class="st">'Proporção de</span><span class="sc">\n</span><span class="st">domicílios'</span>, </span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span>percent) <span class="sc">+</span></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>() <span class="sc">+</span></span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">'bottom'</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -699,9 +709,9 @@ Geodetic CRS:  SIRGAS 2000
 <p>No exemplo anterior, nós agregamos os microdados do censo no nível de municípios. Neste próximo exemplo, faremos uma análise espacial no nível de áreas de ponderação. Aqui nós vamos visualizar como o valor do aluguel varia espacialmente na região metropolitana de São Paulo.</p>
 <p>Primeiro, vamos baixar os municípios da região metropolitana de São Paulo com o <strong>{geobr}</strong>.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>metro_sp <span class="ot">&lt;-</span> geobr<span class="sc">::</span><span class="fu">read_metro_area</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">showProgress =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">filter</span>(name_metro <span class="sc">==</span> <span class="st">"RM São Paulo"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>metro_sp <span class="ot">&lt;-</span> geobr<span class="sc">::</span><span class="fu">read_metro_area</span>(<span class="at">year =</span> <span class="dv">2010</span>,</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                                     <span class="at">showProgress =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span> </span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>              <span class="fu">filter</span>(name_metro <span class="sc">==</span> <span class="st">"RM São Paulo"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Também precisamos dos polígonos das áreas de ponderação. Com o código abaixo, baixamos todas as áreas de ponderação do estado de São Paulo e, em seguida, mantemos apenas aquelas na região metropolitana de São Paulo.</p>
 <div class="cell">
@@ -790,17 +800,17 @@ Geodetic CRS:  SIRGAS 2000
 </div>
 <p>Por fim, basta unirmos os dados espaciais com nossas estimativas de aluguel pela variável chave de código da área de ponderação (<code>code_weighting</code>), e mapear os resultados.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>rent_sf <span class="ot">&lt;-</span> <span class="fu">left_join</span>(wt_areas, rent, <span class="at">by =</span> <span class="st">'code_weighting'</span>)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> rent_sf, <span class="fu">aes</span>(<span class="at">fill =</span> avgrent), <span class="at">color=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> metro_sp, <span class="at">color=</span><span class="st">'gray'</span>, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
-<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Valor médio do aluguel por área de ponderação"</span>,</span>
-<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Região Metropolitana de São Paulo, 2010"</span>) <span class="sc">+</span></span>
-<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Purples"</span>, <span class="at">direction =</span> <span class="dv">1</span>, </span>
-<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name=</span><span class="st">'Valores</span><span class="sc">\n</span><span class="st">em R$'</span>,</span>
-<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">number_format</span>(<span class="at">big.mark =</span> <span class="st">"."</span>)) <span class="sc">+</span></span>
-<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>rent_sf <span class="ot">&lt;-</span> <span class="fu">left_join</span>(wt_areas, rent, <span class="at">by =</span> <span class="st">'code_weighting'</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>() <span class="sc">+</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> rent_sf, <span class="fu">aes</span>(<span class="at">fill =</span> avgrent), <span class="at">color=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_sf</span>(<span class="at">data =</span> metro_sp, <span class="at">color=</span><span class="st">'gray'</span>, <span class="at">fill=</span><span class="cn">NA</span>) <span class="sc">+</span></span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Valor médio do aluguel por área de ponderação"</span>,</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">subtitle =</span> <span class="st">"Região Metropolitana de São Paulo, 2010"</span>) <span class="sc">+</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Purples"</span>, <span class="at">direction =</span> <span class="dv">1</span>, </span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>                       <span class="at">name=</span><span class="st">'Valores</span><span class="sc">\n</span><span class="st">em R$'</span>,</span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">labels =</span> scales<span class="sc">::</span><span class="fu">number_format</span>(<span class="at">big.mark =</span> <span class="st">"."</span>)) <span class="sc">+</span></span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -814,24 +824,26 @@ Geodetic CRS:  SIRGAS 2000
 <section id="data-cache" class="level2" data-number="4.7">
 <h2 data-number="4.7" data-anchor-id="data-cache"><span class="header-section-number">4.7</span> Data cache</h2>
 <p>Na primeira vez que o usuário executa uma função, o <strong>{censobr}</strong> fará o download do arquivo e o armazenará localmente. Dessa forma, os dados só precisam ser baixados uma vez. Quando o parâmetro <code>cache</code> está configurado como <code>TRUE</code> (que é o comportamento padrão do pacote), a função lerá os dados que já estão armanezados em cache, o que é praticamente instantâneo.</p>
-<p>Os usuários podem gerenciar os conjuntos de dados em cache usando a função <code>censobr_cache()</code>. Por exemplo, os usuários podem:</p>
-<p>Listar arquivos em cache:</p>
+<p>Os usuários podem gerenciar os conjuntos de dados em cache usando algumas funções. Por exemplo, os usuários podem:</p>
+<p>Encontrar qual é a pasta de cache sendo utilizada pelo pacote. Por padrão, os arquivos do <strong>{censobr}</strong> são salvos no diretório ‘User’.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">list_files =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">get_censobr_cache_dir</span>()</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Deletar um arquivo específico:</p>
+<p>No entanto, você pote apontar para qualquer outro endereço onde o cache deverá ser salvo, essa configuração é persistente entre sessões do R.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">delete_file =</span> <span class="st">"2010_emigration"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set_censobr_cache_dir</span>(<span class="at">path =</span> ... )</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Deletar todos arquivos do cache:</p>
+<p>A função <code>censobr_cache()</code> permite tanto listar os arquivos em cache:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">delete_file =</span> <span class="st">"all"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">list_files =</span> <span class="cn">TRUE</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Por padrão, os arquivos do <strong>{censobr}</strong> são salvos no diretório ‘User’. No entanto, os usuários podem executar a função <code>set_censobr_cache_dir()</code> para definir um diretório de cache personalizado. Note que essa definição personalizada precisa ser definida a cada nova sessão do R.</p>
+<p>quanto deletar um arquivo específico:</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>tempf <span class="ot">&lt;-</span> <span class="fu">tempdir</span>()</span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a><span class="fu">set_censobr_cache_dir</span>(<span class="at">path =</span> tempf)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">delete_file =</span> <span class="st">"2010_emigration"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>ou mesmo deletar todos arquivos do cache:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">censobr_cache</span>(<span class="at">delete_file =</span> <span class="st">"all"</span>)</span></code><button title="Copiar para a área de transferência" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

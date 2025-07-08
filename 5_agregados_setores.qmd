@@ -7,46 +7,73 @@ code-annotations: hover
 
 Talvez os conjuntos de dados mais comumente usados dos censos brasileiros sejam os microdados de pessoas e domicílios. No entanto, o IBGE também disponibiliza dados muito ricos sobre as características populacionais e ambientais agregados no nível de setores censitários. Neste capítulo, mostramos como usar o pacote **{censobr}** para acessar facilmente esses dados usando a função `read_tracts()`.
 
+Esta função permite ler os dados agregados por setores censitários para os censos de 2000, 2010 e 2022.
 
 ## Estrutura dos dados
 
-No seu formato original, os dados agregados no nível de setores censitários estão divididos em diferentes tipos de variáveis (e.g. variáveis de características de pessoas, de domicílios, etc). Em muitos casos, esses conjuntos de variáveis estão espalhadas por vários arquivos (em alguns casos com centenas variáveis). Para facilitar o entendimento desses dados, o **{censobr}** reúne todos os arquivos / variáveis em 8 tabelas:
+No seu formato original, os dados agregados no nível de setores censitários estão divididos em diferentes tipos de variáveis (e.g. variáveis de características de pessoas, de domicílios, etc). Em muitos casos, esses conjuntos de variáveis estão espalhados por vários arquivos (em alguns casos com centenas variáveis). Para facilitar o entendimento desses dados, o **{censobr}** reúne todos os arquivos / variáveis diferente tabelas (datasets):
 
-- `"Basico"`
-- `"Entorno"`
-- `"Domicilio"`
-- `"Pessoa"`
-- `"Responsavel"`
-- `"PessoaRenda"`
-- `"DomicilioRenda"`
-- `"ResponsavelRenda"`
 
+```{r dict-table, echo = FALSE, message = FALSE}
+# ---- packages -----------------------------------------------------------
+library(knitr)
+library(kableExtra)
+
+# ---- data ---------------------------------------------------------------
+dic_2000 <- c(
+  "Basico", "Domicilio", "Pessoa", "Responsavel", "Instrucao", "Morador"
+    )
+
+dic_2010 <- c(
+  "Basico", "Domicilio", "Pessoa", "Responsavel", "Entorno",  "ResponsavelRenda", "DomicilioRenda", "PessoaRenda"  
+  )
+
+dic_2022 <- c(
+  "Basico", "Domicilio", "Pessoas", " ", "Entorno", "ResponsavelRenda", 
+  "Indigenas", "Quilombolas", "Obitos", "Preliminares"
+  )
+
+# pad the shorter vector with blanks so the columns have equal length
+max_len <- max(length(dic_2000), length(dic_2010), length(dic_2022))
+dic_2000 <- c(dic_2000, rep("", max_len - length(dic_2000)))
+dic_2010 <- c(dic_2010, rep("", max_len - length(dic_2010)))
+dic_2022 <- c(dic_2022, rep("", max_len - length(dic_2022)))
+
+tab <- data.frame(`2000` = dic_2000,
+                  `2010` = dic_2010,
+                  `2022` = dic_2022,
+                  check.names = FALSE)
+
+# ---- display ------------------------------------------------------------
+kable(tab, escape = FALSE, align = "l") |>
+  kable_styling(full_width = FALSE, position = "left")
+```
 
 Todas estas tabelas estão organizadas seguindo a mesma lógica. Nos casos em que as variáveis de uma tabela provêm de arquivos diferentes, o nome da variável recebe um prefixo indicando a sua tabela de origem. Isso é feito para facilitar a consulta do significado de cada coluna no arquivo de dicionário variáveis (no próximo capítulo a gente vai ver como baixar os dicionários variáveis dos censos).
 
-Para ilustrar isso, vejamos a tabela com variáveis de `"Domicilio"`. Essa tabela provêm de dois arquivos separados: *Domicilio01* e *Domicilio02*. Assim, os nomes das colunas nessa tabela são organizados da seguinte maneira:
+Para ilustrar isso, vejamos a tabela com variáveis de `"Domicilio"` do censo de 2022. Essa tabela provêm de três arquivos separados: *Domicilio01*, *Domicilio02* e *Domicilio03*. Assim, os nomes das colunas nessa tabela são organizados da seguinte maneira:
 
 ```{r warning = FALSE, message=FALSE}
 #| label: read-tracts-domicilio
-library(censobr)
+dom <- censobr::read_tracts(
+  year = 2022,
+  dataset = 'Domicilio', 
+  showProgress = FALSE
+  )
 
-# baixa dados agregados de setores: variáveis de domicilios
-dom <- read_tracts(year = 2010, 
-                   dataset = 'Domicilio',
-                   as_data_frame = FALSE,
-                   showProgress = FALSE)
-
-names(dom)[c(1:12,301:306)]
+names(dom)[c(30:33,119:121, 526:528)]
 ```
 
 ## Dicionário de variáveis
 
-Para verificar o significado de cada variável, você pode executar o comando `data_dictionary()`, que abrirá no navegador um arquivo `.html` ou `.pdf` com o dicionário de variáveis de cada conjunto de dados (ver mais info no capítulo 6 sobre Documentação).
+Para verificar o significado de cada variável, você pode executar o comando `data_dictionary()`, que o arquivo com o dicionário de variáveis de cada conjunto de dados (ver mais info no capítulo 6 sobre Documentação).
 
 ```{r}
 #| eval: false
-data_dictionary(year = 2010,
-                dataset = 'tracts')
+censobr::data_dictionary(
+  year = 2022,
+  dataset = 'tracts'
+  )
 
 ```
 
@@ -78,13 +105,17 @@ Utilizando o código abaixo, podemos baixar os dados e calcular a renda per capi
 ```{r warning = FALSE, message=FALSE}
 #| label: read-tracts-Basico-renda
 # baixa os dados
-tract_basico <- read_tracts(year = 2010,                    # <1>
-                            dataset = "Basico",
-                            showProgress = FALSE)
+tract_basico <- read_tracts(
+  year = 2010,                    # <1>
+  dataset = "Basico",
+  showProgress = FALSE
+  )
 
-tract_income <- read_tracts(year = 2010,                    # <2>   
-                            dataset = "DomicilioRenda",
-                            showProgress = FALSE)     
+tract_income <- read_tracts(
+  year = 2010,                    # <2>   
+  dataset = "DomicilioRenda",
+  showProgress = FALSE
+  )     
 
 # selecionar conlunas
 tract_basico <- tract_basico |> select('code_tract','V002') # <3>
@@ -118,16 +149,18 @@ bh_info <- geobr::lookup_muni(name_muni = 'Belo Horizonte')
 #> code_muni: 3106200
 
 # baixa municipio de BH
-muni_bh <- geobr::read_municipality(code_muni = 'MG', 
-                                    year = 2010,
-                                    showProgress = FALSE) |>
-           filter(name_muni == "Belo Horizonte")
+muni_bh <- geobr::read_municipality(
+  code_muni = 'MG', 
+  year = 2010,
+  showProgress = FALSE) |>
+  filter(name_muni == "Belo Horizonte")
 
 # baixa todos setores de Minas Gerais
-tracts_2010 <- geobr::read_census_tract(code_tract = "MG",
-                                        year = 2010,
-                                        simplified = FALSE,
-                                        showProgress = FALSE) # <1>
+tracts_2010 <- geobr::read_census_tract(
+  code_tract = "MG",
+  year = 2010,
+  simplified = FALSE,
+  showProgress = FALSE) # <1>
 
 # filtra setores de BH
 tracts_2010 <- filter(tracts_2010, name_muni == 'Belo Horizonte')
@@ -164,26 +197,29 @@ ggplot() +
 
 ### Examplo 2: Distribuição espacial da população em 2022
 
-Neste segundo exemplo, nós vamos utilizar os resultados `"Preliminares"` dos agregados dos setores censitários do censo de 2022, que foram divulgados pelo IBGE em março de 2024. Em particular, vamos utilizar a variável `V0001` que informa a população total dos setores. Além disso, como houve uma mudança na malha espacial de setores censitários entre 2010 e 2022, nós precisamos baixar a malha do ano correspondente.
+Neste segundo exemplo, nós vamos utilizar os resultados `"Basico"` dos agregados dos setores censitários do censo de 2022. Em particular, vamos utilizar a variável `V0001` que informa a população total dos setores. Além disso, como houve uma mudança na malha espacial de setores censitários entre 2010 e 2022, nós precisamos baixar a malha do ano correspondente.
 
 ```{r warning = FALSE, message=FALSE}
 #| label: get-tracts-entorno
 
 # download dados preliminares dos setores de 2022
-tracts_df22 <- read_tracts(year = 2022,
-                          dataset = "Preliminares",
-                          showProgress = FALSE) |>
-               filter(name_muni == 'Belo Horizonte') |>
-               collect()
+tracts_df <- censobr::read_tracts(
+  year = 2022,
+  dataset = "Basico",
+  showProgress = FALSE) |>
+  filter(name_muni == 'Belo Horizonte') |>
+  collect()
 
 # baixa todos setores de Minas Gerais
-tracts_2022 <- geobr::read_census_tract(code_tract = "MG",
-                                        year = 2022,
-                                        simplified = FALSE,
-                                        showProgress = FALSE)
+tracts_sf <- geobr::read_census_tract(
+  code_tract = "MG",
+  year = 2022,
+  simplified = FALSE,
+  showProgress = FALSE
+  )
 
 # filtra setores de BH
-tracts_2022 <- filter(tracts_2022, name_muni == 'Belo Horizonte')
+tracts_sf <- filter(tracts_sf, name_muni == 'Belo Horizonte')
 
 ```
 
@@ -191,14 +227,13 @@ Agora a gente pode fazer um *merge* da tabela de população com os dados espaci
 
 ```{r warning = FALSE, message=FALSE}
 #| label: map-tracts-arborizacao
-
 # merge tables
-tracts_df22$code_tract <- as.numeric(tracts_df22$code_tract)
-bh_tracts22 <- left_join(tracts_2022, tracts_df22, by = 'code_tract')
+tracts_sf$code_tract <- as.character(tracts_sf$code_tract)
+bh_tracts22 <- left_join(tracts_sf, tracts_df, by = 'code_tract')
 
 # calcula a área dos setores
 bh_tracts22 <- bh_tracts22 |>
-              mutate(tract_aream2 = sf::st_area(tracts_2022),
+              mutate(tract_aream2 = sf::st_area(bh_tracts22),
                      tract_areakm2 = units::set_units(tract_aream2, km2))
 
 # calcula densidade demografica
