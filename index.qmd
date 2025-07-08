@@ -1,6 +1,6 @@
 # Introdução
 
-Este site apresenta o material de apoio para a oficina **Reportagens de dados usando R: atalhos para acessar o Censo Demográfico com o {censobr}"**. A oficina será realizada como parte da programação do 20<sup>o</sup> [Encontro da Abraji](https://congresso.abraji.org.br/), em São Paulo, entre os dias 10 e 13 de julho de 2025.
+Este site apresenta o material de apoio para a oficina **Reportagens de dados usando R: atalhos para acessar o Censo Demográfico com o {censobr}**. A oficina será realizada como parte da programação do 20<sup>o</sup> [Encontro da Abraji](https://congresso.abraji.org.br/), em São Paulo, entre os dias 10 e 13 de julho de 2025.
 
 
 
